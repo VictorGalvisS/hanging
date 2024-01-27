@@ -3,12 +3,13 @@ import { letters } from './helpers/letters';
 import { HangImage } from './components/HangImage'
 
 import './App.css'
+import { getRandomWord } from './helpers/getRandomWord';
 
 // useState - sirve para saber que hubo un cambio en l
 
 function App() {
 
-  const [word] = useState('COMPUTADORA');
+  const [word, setWord] = useState(getRandomWord());
   const [hiddenWord, setHiddenWord] = useState('_ '.repeat(word.length));
   const [attempts, setAttempts] = useState(0);
   const [lose, setLose] = useState(false);
@@ -31,6 +32,8 @@ function App() {
 
   const checkLetter = (letter: string) => {
     if (lose) return;
+    if (won) return;
+
     if (!word.includes(letter)) {
       setAttempts(Math.min(attempts + 1, 9));
       return;
@@ -45,6 +48,15 @@ function App() {
     setHiddenWord(hiddenWordArray.join(' ').replace('/s+', ' '));
   };
 
+  const newGame = () => {
+    const newWord = getRandomWord();
+    setWord(newWord);
+    setHiddenWord('_ '.repeat(newWord.length));
+    setAttempts(0);
+    setLose(false);
+    setWon(false);
+  };
+
   return (
     <div className='App'>
       {/* Imagenes */}
@@ -57,18 +69,10 @@ function App() {
       <h3>Intentos: {attempts}</h3>
 
       {/* Mensaje si perdio */}
-      {
-        (lose) ?
-          <h2>Perdio - Palabra era: {word}</h2>
-          : ''
-      }
+      {(lose) ? <h2>Perdio - Palabra era: {word}</h2> : ''}
 
       {/* Mensaje si gano */}
-      {
-        (won) ?
-          <h2>Felicidades, usted Gano</h2>
-          : ''
-      }
+      {(won) ? <h2>Felicidades, usted Gano</h2> : ''}
 
       {/* Botones de letras */}
       {
@@ -79,8 +83,8 @@ function App() {
             {letter}</button>
         ))
       }
-      <button>A</button>
-
+      <br /><br />
+      <button key={'newGame'} onClick={newGame}>Reinicia Juego !!!</button>
     </div>
   )
 }
